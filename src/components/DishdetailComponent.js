@@ -2,7 +2,7 @@ import React,{ Component } from 'react';
 import {
     Card, CardImg, CardText, CardBody,
     CardTitle, BreadcrumbItem, Breadcrumb,Button,
-    Modal,ModalHeader,ModalBody,ModalFooter,Row,Label, Input
+    Modal,ModalHeader,ModalBody,ModalFooter,Row,Label, Input, Col
   } from 'reactstrap';
   import {Link} from 'react-router-dom';
 import { LocalForm,Control,Errors } from 'react-redux-form';
@@ -21,7 +21,7 @@ function RenderDish({dish}) {
     );
 }
 
-function RenderComments({comments}) {
+function RenderComments({comments, addComment, dishId}) {
         if(comments != null)
             return(
                 <div className="col-12 col-md-5 m-1">
@@ -35,7 +35,7 @@ function RenderComments({comments}) {
                                 </li>
                             );
                         })}
-                        <CommentForm />
+                        <CommentForm dishId={dishId} addComment={addComment} />
                     </ul>
                 </div>
             );
@@ -55,13 +55,13 @@ class CommentForm extends Component {
         };
     }
 
-    toggle() {
-        this.setState({show:!this.state.show})
+    handleSubmit(values) {
+        this.toggle();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment );
     }
 
-    handleSubmit(values) {
-        console.log("Current State is: " + JSON.stringify(values));
-        alert("Current State is: " + JSON.stringify(values));
+    toggle() {
+        this.setState({show:!this.state.show})
     }
 
     render() { 
@@ -109,12 +109,15 @@ class CommentForm extends Component {
                                         rows={6}
                                         className="form-control"/>
                                 </Row>
+                                <Row className="form-group mt-2">
+                                    <Button type="submit" color="primary">
+                                        Submit
+                                    </Button>
+                                </Row>
                             </LocalForm>
                         </div>
                     </ModalBody>
-                    <ModalFooter>
-                    <Button className="form-group" color="primary"  type="submit" onClick={this.toggle}>Submit</Button>
-                    </ModalFooter>
+                    
                 </Modal>
             </div>
          );
@@ -137,7 +140,9 @@ class CommentForm extends Component {
                         </div>
                         <div className="row">
                             <RenderDish dish={props.dish} />
-                            <RenderComments comments={props.comments} />
+                            <RenderComments comments={props.comments}
+                                addComment={props.addComment}
+                                dishId={props.dish.id} />
     
                         </div>
                     </div>
